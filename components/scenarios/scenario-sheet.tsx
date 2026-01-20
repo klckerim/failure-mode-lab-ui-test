@@ -48,7 +48,7 @@ export function ScenarioSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent 
         side="right" 
-        className="w-full sm:max-w-xl p-0 flex flex-col h-dvh overflow-hidden"
+        className="w-full sm:max-w-xl p-0 flex flex-col h-dvh min-h-0 overflow-hidden"
       >
         <SheetHeader className="flex-shrink-0 px-6 py-4 border-b border-border">
           <SheetTitle>

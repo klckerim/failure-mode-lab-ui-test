@@ -160,7 +160,7 @@ export function ScenarioForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col h-full">
+    <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0">
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
         {/* Basic Info */}
         <div className="space-y-4">
