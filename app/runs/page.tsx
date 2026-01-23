@@ -1,5 +1,6 @@
 "use client"
 
+import { format } from "date-fns"
 import * as React from "react"
 import type { DateRange } from "react-day-picker"
 
@@ -91,6 +92,21 @@ export default function RunsPage() {
   }
 
   const hasActiveFilters = statusFilter !== "all" || dateRange !== undefined || selectedScenarios.length > 0
+  const statusLabelMap: Record<RunStatus, string> = {
+    success: "Success",
+    failed: "Failed",
+    degraded: "Degraded",
+  }
+  const scenarioNameById = React.useMemo(() => {
+    return new Map(scenarios.map((scenario) => [scenario.id, scenario.name]))
+  }, [])
+
+  const formattedDateRange = React.useMemo(() => {
+    if (!dateRange?.from && !dateRange?.to) return null
+    const from = dateRange?.from ? format(dateRange.from, "MMM d, yyyy") : "Any start"
+    const to = dateRange?.to ? format(dateRange.to, "MMM d, yyyy") : "Any end"
+    return `${from} → ${to}`
+  }, [dateRange])
 
   return (
     <div className="min-h-screen bg-background">
@@ -163,6 +179,53 @@ export default function RunsPage() {
                 </>
               )}
             </p>
+            {hasActiveFilters && (
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <span className="text-muted-foreground">Active filters:</span>
+                {statusFilter !== "all" && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => setStatusFilter("all")}
+                    aria-label={`Remove status filter ${statusLabelMap[statusFilter]}`}
+                  >
+                    Status: {statusLabelMap[statusFilter]}
+                    <X className="ml-1 h-3 w-3" aria-hidden="true" />
+                  </Button>
+                )}
+                {formattedDateRange && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => setDateRange(undefined)}
+                    aria-label="Remove date range filter"
+                  >
+                    Dates: {formattedDateRange}
+                    <X className="ml-1 h-3 w-3" aria-hidden="true" />
+                  </Button>
+                )}
+                {selectedScenarios.map((scenarioId) => {
+                  const scenarioName = scenarioNameById.get(scenarioId) ?? scenarioId
+                  return (
+                    <Button
+                      key={scenarioId}
+                      variant="secondary"
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                      onClick={() =>
+                        setSelectedScenarios((prev) => prev.filter((id) => id !== scenarioId))
+                      }
+                      aria-label={`Remove scenario filter ${scenarioName}`}
+                    >
+                      Scenario: {scenarioName}
+                      <X className="ml-1 h-3 w-3" aria-hidden="true" />
+                    </Button>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           {/* Runs Table */}
